@@ -131,6 +131,7 @@ GameObject:
   m_Component:
   - component: {fileID: 32919362}
   - component: {fileID: 32919363}
+  - component: {fileID: 32919364}
   m_Layer: 5
   m_Name: Deck
   m_TagString: Untagged
@@ -169,16 +170,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5671765a397d4511ab9f424791d5bee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CardCount: 5
+  PlacementDuration: 0.3
+  Easing: 0
+  AngularSpacing: {x: 0, y: 0, z: 12}
+  cardPivot: {x: 0.5, y: -1.5}
+  CenterAncoredPosition: {x: 0, y: -1500}
+  Spacing: {x: 100, y: 0}
+  Cards: []
+--- !u!114 &32919364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 32919361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 409bedc7975943c299632a649cd0f16c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Deck: {fileID: 32919363}
   CardViewPrefab: {fileID: 406673252184061480, guid: 80672dcfdd0654412ba78b8cd8664fd6,
     type: 3}
   Factory: {fileID: 125318494}
-  CardCount: 5
-  PlacementAngle: 80
-  PlacementDuration: 1
-  Easing: 1
-  cardPivot: {x: 0.5, y: -1.5}
-  targetAncoredPosition: {x: 0, y: -1500, z: 0}
-  Cards: []
+  NumberOfCards: 6
 --- !u!1 &125318493
 GameObject:
   m_ObjectHideFlags: 0
@@ -797,9 +813,9 @@ RectTransform:
   m_Father: {fileID: 543125816}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -150}
   m_SizeDelta: {x: 300, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1137185360
@@ -845,7 +861,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 32919363}
+      - m_Target: {fileID: 32919364}
         m_MethodName: Cycle
         m_Mode: 1
         m_Arguments:

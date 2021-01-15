@@ -30,8 +30,7 @@ namespace florius.Card
                 cardUpdate?.Invoke(this);
             }
         }
-
-
+        
         public int Hp
         {
             get => hp;

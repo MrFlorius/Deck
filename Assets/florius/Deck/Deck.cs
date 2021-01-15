@@ -1,62 +1,53 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DG.Tweening;
 using florius.Card;
 using UnityEngine;
-using Random = System.Random;
 
 namespace florius.Deck
 {
     public class Deck : MonoBehaviour
     {
-        public CardView CardViewPrefab;
-        public CardDataFactory Factory;
-
-        [Header("Animation Settings")]
+        [Header("Deck initialization settings")]
         public int CardCount;
-        public float PlacementAngle;
-        public float PlacementDuration;
+
+        [Header("Animation Settings")] public float PlacementDuration;
         public Ease Easing = Ease.InOutElastic;
 
-        [Header("Placement Settings")] 
+        [Header("Placement Settings")]
+        public Vector3 AngularSpacing;
         public Vector2 cardPivot;
-        public Vector3 targetAncoredPosition;
-        
+        public Vector2 CenterAncoredPosition;
+        public Vector2 Spacing;
+
         [Header("Current Cards")] public List<CardView> Cards = new List<CardView>();
-        
-        private int idx;
-        private Random random = new Random();
 
-        private void Start()
+        public void RemoveFromDeck(CardView c)
         {
-            RefillDeck(CardCount);
+            Cards.Remove(c);
+            RearrangeCards();
         }
 
-        private CardView CreateCardView(Vector2 pivot, Vector3 anchoredPosition)
+        public void Clear()
         {
-            var data = Factory.RequestNewCardData();
-            Debug.Log(data);
-            var c = Instantiate(CardViewPrefab, transform);
-            c.rectTransform.pivot = pivot;
-            c.rectTransform.anchoredPosition = anchoredPosition;
-            c.Card = data;
-
-            return c;
+            Cards.ForEach(x => x.Kill());
         }
 
-        private void RefillDeck(int count)
+        public void AddToDeck(CardView c)
         {
-            Cards.ForEach(Death);
-            Cards.Clear();
+            if (Cards.Contains(c)) return;
+            Cards.Add(c);
+            c.OnZeroHp += RemoveFromDeck;
+            c.transform.SetParent(transform, false);
+            c.rectTransform.pivot = cardPivot;
+            c.rectTransform.anchoredPosition = CenterAncoredPosition;
+            RearrangeCards();
+        }
 
-            for (int i = 0; i < count; i++)
-            {
-                var c = CreateCardView(cardPivot, targetAncoredPosition);
-                Cards.Add(c);
-                c.OnZeroHp += Death;
-                Debug.Log("Subscribed");
-            }
-            
+        public void InsertToDeck(CardView c, int idx)
+        {
+            if (Cards.Contains(c)) return;
+            Cards.Insert(idx, c);
+            c.OnZeroHp += RemoveFromDeck;
             RearrangeCards();
         }
 
@@ -64,42 +55,18 @@ namespace florius.Deck
         {
             for (int i = 0; i < Cards.Count; i++)
             {
-                float centered_idx = ((float) Cards.Count / 2 - i) - 0.5f;
-                Cards[i].transform.DORotate(
-                    new Vector3(0, 0, PlacementAngle * centered_idx / Cards.Count),
-                    PlacementDuration).SetEase(Easing);
+                float centered_offset = ((float) Cards.Count / 2 - i) - 0.5f;
+                var c = Cards[i];
+
+                c.transform.DORotate(AngularSpacing * centered_offset, PlacementDuration)
+                    .SetEase(Easing);
+
+                DOTween.To(
+                    () => c.rectTransform.anchoredPosition,
+                    x => c.rectTransform.anchoredPosition = x,
+                    CenterAncoredPosition - Spacing * centered_offset, PlacementDuration)
+                    .SetEase(Easing);
             }
-        }
-
-        public void Cycle()
-        {
-            var r = random.Next(0, 20);
-            var c = Cards[idx];
-            switch (random.Next(0, 2))
-            {
-                case 0:
-                    c.Card.Mana = r;
-                    break;
-                case 1:
-                    c.Card.Hp = r;
-                    break;
-                case 2:
-                    c.Card.Attack = r;
-                    break;
-            }
-
-            idx += 1;
-            if (idx >= Cards.Count) idx = 0;
-        }
-
-        private void Death(CardView c)
-        {
-            Debug.Log("Killing");
-            Cards.Remove(c);
-            c.OnZeroHp -= Death;
-            idx -= 1;
-            Destroy(c.gameObject);
-            RearrangeCards();
         }
     }
 }

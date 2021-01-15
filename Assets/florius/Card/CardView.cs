@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
@@ -42,10 +43,27 @@ namespace florius.Card
             }
         }
 
-        public event Action<CardView> OnZeroHp; 
+        public event Action<CardView> OnZeroHp
+        {
+            add
+            {
+                if (onZeroHp == null || !onZeroHp.GetInvocationList().Contains(value))
+                {
+                    onZeroHp += value;
+                }
+            }
+            remove { onZeroHp -= value; }
+        }
 
+        private event Action<CardView> onZeroHp;
         private RectTransform _rectTransform;
         private CardData card;
+
+        public void Kill()
+        {
+            onZeroHp?.Invoke(this);
+            Destroy(gameObject);
+        }
 
         private void OnCardDataChanged(CardData c)
         {
@@ -54,11 +72,11 @@ namespace florius.Card
             CounterTween(Mana, c.Mana);
             CounterTween(Attack, c.Attack).OnComplete(() =>
             {
-                Debug.Log("Checking hp");
-                if(c.Hp < 1) OnZeroHp?.Invoke(this);
+                if (c.Hp > 0) return;
+                Kill();
             });
         }
-        
+
         private void OnCardChanged(CardData c)
         {
             Icon.sprite = c.Image;
@@ -77,6 +95,8 @@ namespace florius.Card
         private void OnDisable()
         {
             if(card != null) card.cardUpdate -= OnCardDataChanged;
+            if (onZeroHp == null) return;
+            foreach (var d in onZeroHp.GetInvocationList()) onZeroHp -= (Action<CardView>) d;
         }
 
         private TweenerCore<int, int, NoOptions> CounterTween(Text t, int n)
