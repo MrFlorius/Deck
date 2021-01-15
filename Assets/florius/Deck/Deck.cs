@@ -38,8 +38,8 @@ namespace florius.Deck
             Cards.Add(c);
             c.OnZeroHp += RemoveFromDeck;
             c.OnDragged += OnCardDragged;
-            c.transform.SetParent(transform, false);
             c.rectTransform.SetPivot(cardPivot);
+            c.transform.SetParent(transform, true);
             RearrangeCards();
         }
 
