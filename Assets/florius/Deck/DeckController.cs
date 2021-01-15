@@ -29,7 +29,7 @@ namespace florius.Deck
                     c.Card.Mana = r;
                     break;
                 case 1:
-                    c.Card.Hp = r < 10 ? 0 : r;
+                    c.Card.Hp = r;
                     break;
                 case 2:
                     c.Card.Attack = r;
