@@ -5,6 +5,7 @@ using Random = System.Random;
 
 namespace florius.Deck
 {
+    [RequireComponent(typeof(Deck))]
     public class DeckController : MonoBehaviour
     {
         public Deck Deck;

@@ -23,7 +23,6 @@ namespace florius.Deck
         private IEnumerator GetSprite(Action<Sprite> success)
         {
             var url = $"{BaseImageUrl}/{Width}/{Height}";
-            Debug.Log(url);
             UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
             yield return www.SendWebRequest();
 

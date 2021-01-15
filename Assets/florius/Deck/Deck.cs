@@ -13,8 +13,7 @@ namespace florius.Deck
         [Header("Animation Settings")] public float PlacementDuration;
         public Ease Easing = Ease.InOutElastic;
 
-        [Header("Placement Settings")]
-        public Vector3 AngularSpacing;
+        [Header("Placement Settings")] public Vector3 AngularSpacing;
         public Vector2 cardPivot;
         public Vector2 CenterAncoredPosition;
         public Vector2 Spacing;
@@ -23,6 +22,7 @@ namespace florius.Deck
 
         public void RemoveFromDeck(CardView c)
         {
+            if (!Cards.Contains(c)) return;
             Cards.Remove(c);
             RearrangeCards();
         }
@@ -37,9 +37,9 @@ namespace florius.Deck
             if (Cards.Contains(c)) return;
             Cards.Add(c);
             c.OnZeroHp += RemoveFromDeck;
+            c.OnDragged += OnCardDragged;
             c.transform.SetParent(transform, false);
-            c.rectTransform.pivot = cardPivot;
-            c.rectTransform.anchoredPosition = CenterAncoredPosition;
+            c.rectTransform.SetPivot(cardPivot);
             RearrangeCards();
         }
 
@@ -59,14 +59,24 @@ namespace florius.Deck
                 var c = Cards[i];
 
                 c.transform.DORotate(AngularSpacing * centered_offset, PlacementDuration)
-                    .SetEase(Easing);
+                    .SetEase(Easing)
+                    .OnStart(() => c.IsDragable = false)
+                    .OnComplete(() => c.IsDragable = true);
 
                 DOTween.To(
-                    () => c.rectTransform.anchoredPosition,
-                    x => c.rectTransform.anchoredPosition = x,
-                    CenterAncoredPosition - Spacing * centered_offset, PlacementDuration)
+                        () => c.rectTransform.anchoredPosition,
+                        x => c.rectTransform.anchoredPosition = x,
+                        CenterAncoredPosition - Spacing * centered_offset, PlacementDuration)
                     .SetEase(Easing);
             }
+        }
+        
+        private void OnCardDragged(CardView c, bool outside)
+        {
+            if (outside)
+                RemoveFromDeck(c);
+            else
+                AddToDeck(c);
         }
     }
 }
