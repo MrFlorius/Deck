@@ -94,7 +94,6 @@ namespace florius.Card
 
         public override void OnEndDrag(PointerEventData eventData)
         {
-            Debug.Log("OnEndDrag");
             base.OnEndDrag(eventData);
             onDragged?.Invoke(this, IsPlaced);
             ShinyEffect.Stop();

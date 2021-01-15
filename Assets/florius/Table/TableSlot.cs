@@ -14,7 +14,6 @@ namespace florius.Table
         
         public override void OnDrop(PointerEventData eventData)
         {
-            Debug.Log("OnDrop");
             base.OnDrop(eventData);
             CurrentObject.rectTransform.SetPivot(new Vector2(0.5f, 0.5f));
             CurrentObject.rectTransform.SetParent(rectTransform);
